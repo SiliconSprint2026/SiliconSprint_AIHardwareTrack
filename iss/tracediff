@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""tracediff: compare two instruction traces (e.g. ISS vs RTL) line by line.
+
+    iss/tracediff iss_trace.txt rtl_trace.txt
+
+Prints the first mismatching line with the 5 lines before it and the 5 lines after it
+in each file. Exit status: 0 identical, 1 different, 2 usage or file error.
+Trace format: docs/ISA_SPEC.md, "Trace format".
+"""
+import collections, itertools, sys
+
+CONTEXT = 5
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.stderr.write(__doc__)
+        return 2
+    try:
+        fa, fb = open(sys.argv[1]), open(sys.argv[2])
+    except OSError as e:
+        sys.stderr.write(f"tracediff: {e}\n")
+        return 2
+    a_name, b_name = sys.argv[1], sys.argv[2]
+    before = collections.deque(maxlen=CONTEXT)
+    n = 0
+    for n, (la, lb) in enumerate(itertools.zip_longest(fa, fb), 1):
+        la = la.rstrip("\r\n") if la is not None else None
+        lb = lb.rstrip("\r\n") if lb is not None else None
+        if la == lb:
+            before.append(la)
+            continue
+        print(f"traces differ at line {n} (instruction {n}):")
+        for i, line in enumerate(before):
+            print(f"  {n - len(before) + i:>9}  {line}")
+        width = max(len(a_name), len(b_name))
+        print(f"< {a_name:<{width}}  {la if la is not None else '<end of trace>'}")
+        print(f"> {b_name:<{width}}  {lb if lb is not None else '<end of trace>'}")
+        if la is not None and lb is not None:
+            fields = ["pc", "insn", "rd", "vd"]
+            diff = [f for f, x, y in zip(fields, la.split(), lb.split()) if x != y]
+            print(f"  differing fields: {', '.join(diff) or 'format'}")
+        for name, f in ((a_name, fa), (b_name, fb)):
+            after = [l.rstrip("\r\n") for l in itertools.islice(f, CONTEXT)]
+            if after:
+                print(f"  next lines in {name}:")
+                for i, line in enumerate(after):
+                    print(f"  {n + 1 + i:>9}  {line}")
+        return 1
+    print(f"traces identical ({n} lines)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

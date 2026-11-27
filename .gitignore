@@ -1,0 +1,7 @@
+build/
+sw/bin/
+iss/build/
+__pycache__/
+*.o
+*.vcd
+*.fst

@@ -1,0 +1,7 @@
+# Keep LF everywhere, even on Windows with core.autocrlf=true:
+# shell scripts and Makefiles break inside the Linux container if they get CRLF.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.bin binary
+*.lib -diff

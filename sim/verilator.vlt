@@ -1,0 +1,10 @@
+`verilator_config
+// PicoRV32 is upstream code and is not ours to clean up: no lint warnings from it.
+lint_off -file "*/picorv32.v"
+// soc_top leaves unused PicoRV32 outputs (look-ahead bus, RVFI extras) open on purpose.
+lint_off -rule PINCONNECTEMPTY -file "*/soc_top.sv"
+// tcm.sv holds two modules, itcm and dtcm.
+lint_off -rule DECLFILENAME -file "*/tcm.sv"
+// Memories take full byte addresses and ignore the low bits below their word size.
+lint_off -rule UNUSEDSIGNAL -file "*/tcm.sv"
+lint_off -rule UNUSEDSIGNAL -file "*/mmio.sv"
