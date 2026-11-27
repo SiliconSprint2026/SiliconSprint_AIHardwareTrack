@@ -1,5 +1,8 @@
 # TENSOR-CORE: build a tensor coprocessor for a tiny GPT
 
+
+**Problem Statement in brief : [Problem statements_Hardware_forAI.pdf](https://github.com/user-attachments/files/35512546/Problem.statements_Hardware_forAI.pdf)**
+
 You get a small RISC-V chip (PicoRV32) with an **empty coprocessor slot**, and a tiny int8
 GPT that writes Shakespeare-like text. Your job:
 
